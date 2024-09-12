@@ -1,0 +1,19 @@
+suyh:
+  spel:
+    tg:
+      templates:
+        start:
+          enabled: true
+          template: >-
+            #{#artifactId}-v#{#version} START SUCCESS.
+            flink job host: #{#flinkWebHost}, port: #{#flinkWebPort},
+            jobName: #{#flinkJobName}, jobId: #{#flinkJobId},
+            jobMode: #{#flinkJobMode}, jobSubmitStatus: #{#flinkJobSubmitStatus},
+            flinkJobArgument: #{#flinkJobArgument}
+
+spring:
+  main:
+    web-application-type: none
+
+
+
