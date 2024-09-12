@@ -20,20 +20,26 @@ import javax.validation.Valid;
 @Validated
 public class TestController {
     @RequestMapping(value = "/test", method = RequestMethod.POST)
-    public String test(@RequestBody @Valid TgTemplate tgTemplate) {
+    public String test(@RequestBody @Valid TempVo tempVo) {
 
         return "OK";
     }
 
     @Data
     @SpelValid
-    public static class TgTemplate {
+    public static class TempVo {
         private boolean enabled = false;
 
+        /**
+         * 校验：当 {@link TempVo#enabled} 为true 时需要校验
+         */
         @SpelNotNull(condition = "#this.enabled == true")
         private String template;
 
-        public interface TemplateGroup {
-        }
+        /**
+         * 调用 ss bean 对方的方法 conditional 若返回结果为true，则校验
+         */
+        @SpelNotNull(condition = "@ss.conditional(#this.enabled)")
+        private String otherString;
     }
 }
