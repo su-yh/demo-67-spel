@@ -1,23 +1,71 @@
 package com.suyh.util;
 
-import cn.sticki.validator.spel.parse.SpelParser;
-import org.intellij.lang.annotations.Language;
+import cn.sticki.validator.spel.exception.SpelParserException;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.expression.EvaluationException;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ParseException;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * suyh - 嘿嘿，我这里就是想用一下 注解： @Language("SpEL")  让idea 有提示功能和跳转功能
+ *
  * @author suyh
  * @since 2024-10-10
  */
-// suyh - 嘿嘿，我这里就是想用一下 注解： @Language("SpEL")  让idea 有提示功能和跳转功能
+@Slf4j
 public class SpelParserUtils {
+    private static final SpelExpressionParser parser = new SpelExpressionParser();
+
+    private static final Map<String, Expression> expressionCache = new ConcurrentHashMap<>();
+
+    /**
+     * 解析表达式
+     *
+     * @param expression 表达式
+     * @param rootObject 用于计算表达式的根对象
+     * @return 表达式计算结果
+     */
     @Nullable
-    public static Object parse(@Language("SpEL") String expression, Object rootObject) {
-        return SpelParser.parse(expression, rootObject);
+    public static Object parse(String expression, Object rootObject, StandardEvaluationContext context) {
+        try {
+            log.debug("======> Parse expression [{}]", expression);
+            Expression parsed = expressionCache.computeIfAbsent(expression, parser::parseExpression);
+            Object value = parsed.getValue(context, rootObject, Object.class);
+            log.debug("======> Parse result [{}]", value);
+            return value;
+        } catch (ParseException | EvaluationException e) {
+            log.error("Parse expression error, expression [{}], message [{}]", expression, e.getMessage());
+            throw new SpelParserException(e);
+        }
     }
 
+    /**
+     * 解析表达式
+     *
+     * @param <T>          返回值类型
+     * @param expression   表达式
+     * @param rootObject   用于计算表达式的根对象
+     * @param requiredType 指定返回值的类型
+     * @return 表达式计算结果
+     * @throws SpelParserException 当表达式计算结果为null或者不是指定类型时抛出
+     */
     @NotNull
-    public static <T> T parse(@Language("SpEL") String expression, Object rootObject, Class<T> requiredType) {
-        return SpelParser.parse(expression, rootObject, requiredType);
+    public static <T> T parse(String expression, Object rootObject, Class<T> requiredType, StandardEvaluationContext context) {
+        Object any = parse(expression, rootObject, context);
+        if (any == null) {
+            throw new SpelParserException("Expression [" + expression + "] calculate result can not be null");
+        }
+        if (!requiredType.isInstance(any)) {
+            throw new SpelParserException("Expression [" + expression + "] calculate result must be [" + requiredType.getName() + "]");
+        }
+        //noinspection unchecked
+        return (T) any;
     }
 }

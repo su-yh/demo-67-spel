@@ -1,11 +1,8 @@
 package com.suyh.mvc.interceptor;
 
-import com.suyh.component.AuditOperation;
-import com.suyh.util.SpelParserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -31,18 +28,7 @@ public class AuditInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        AuditOperation auditOperation = handlerMethod.getMethodAnnotation(AuditOperation.class);
-        if (auditOperation == null) {
-            return true;
-        }
-
-        String value = auditOperation.value();
-        if (!StringUtils.hasText(value)) {
-            return true;
-        }
-
-        SpelParserUtils.parse(value, null);
-
+        // FIXME: suyh - 拦截器的方式不知道怎么取到实时的参数名和参数值。这里只能通过反射取方法参数上声明的相关信息，而没有得到参数值。
         return true;
     }
 }
