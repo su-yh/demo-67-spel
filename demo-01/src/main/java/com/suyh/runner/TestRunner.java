@@ -1,7 +1,7 @@
 package com.suyh.runner;
 
-import cn.sticki.validator.spel.parse.SpelParser;
 import com.suyh.controller.TestController;
+import com.suyh.util.SpelParserUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -15,8 +15,8 @@ public class TestRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         TestController.TempVo vo = new TestController.TempVo();
-        Object parse = SpelParser.parse("@ss.conditional(#this.enabled)", vo);
-        Boolean res = SpelParser.parse("@ss.conditional(#this.enabled)", vo, Boolean.class);
+        Object parse = SpelParserUtils.parse("@ss.conditional(#this.enabled)", vo);
+        Boolean res = SpelParserUtils.parse("@ss.conditional(#this.enabled)", vo, Boolean.class);
         System.out.println(parse);
         System.out.println(res);
     }
