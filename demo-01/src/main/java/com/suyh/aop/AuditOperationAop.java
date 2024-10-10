@@ -12,7 +12,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.intellij.lang.annotations.Language;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.expression.BeanFactoryResolver;
-import org.springframework.core.annotation.Order;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
@@ -22,12 +21,14 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 
 /**
+ * TODO: suyh - 我还是一直想要通过拦截器的方式来处理审计日志，但是拦截器的方式要如何取到方法参数名以及参数值呢，特别是这个参数值。
+ *   我一直参考 SpringSecurity 的 @PreAuthorize  注解的实现，但是没看懂具体它是如何实现的。
+ *
  * @author suyh
  * @since 2024-10-10
  */
 @Aspect
 @Component
-@Order(-1)
 @Slf4j
 @RequiredArgsConstructor
 public class AuditOperationAop {
@@ -73,6 +74,6 @@ public class AuditOperationAop {
             context.setVariable(parameterNames[i], args[i]);
         }
 
-        SpelParserUtils.parse(spelExpression, null, context);
+        SpelParserUtils.parse(context, spelExpression, null);
     }
 }

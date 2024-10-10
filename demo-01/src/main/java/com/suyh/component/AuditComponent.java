@@ -13,7 +13,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class AuditComponent {
-    public void recordTmp(LoginUser loginUser, String opt) {
+
+    /**
+     * 审计操作日志记录
+     */
+    public void auditOperationLogRecord(LoginUser loginUser, String opt) {
         log.info("recordTmp, loginUser: {}, opt: {}", loginUser, opt);
     }
 }

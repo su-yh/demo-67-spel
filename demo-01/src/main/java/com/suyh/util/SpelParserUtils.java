@@ -2,20 +2,19 @@ package com.suyh.util;
 
 import cn.sticki.validator.spel.exception.SpelParserException;
 import lombok.extern.slf4j.Slf4j;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * suyh - 嘿嘿，我这里就是想用一下 注解： @Language("SpEL")  让idea 有提示功能和跳转功能
- *
  * @author suyh
  * @since 2024-10-10
  */
@@ -33,7 +32,7 @@ public class SpelParserUtils {
      * @return 表达式计算结果
      */
     @Nullable
-    public static Object parse(String expression, Object rootObject, StandardEvaluationContext context) {
+    public static Object parse(EvaluationContext context, @Language("SpEL") String expression, Object rootObject) {
         try {
             log.debug("======> Parse expression [{}]", expression);
             Expression parsed = expressionCache.computeIfAbsent(expression, parser::parseExpression);
@@ -57,8 +56,8 @@ public class SpelParserUtils {
      * @throws SpelParserException 当表达式计算结果为null或者不是指定类型时抛出
      */
     @NotNull
-    public static <T> T parse(String expression, Object rootObject, Class<T> requiredType, StandardEvaluationContext context) {
-        Object any = parse(expression, rootObject, context);
+    public static <T> T parse(EvaluationContext context, @Language("SpEL") String expression, Object rootObject, Class<T> requiredType) {
+        Object any = parse(context, expression, rootObject);
         if (any == null) {
             throw new SpelParserException("Expression [" + expression + "] calculate result can not be null");
         }
