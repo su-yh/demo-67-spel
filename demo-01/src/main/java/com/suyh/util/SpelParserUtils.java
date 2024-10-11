@@ -55,6 +55,7 @@ public class SpelParserUtils {
      * @return 表达式计算结果
      * @throws SpelParserException 当表达式计算结果为null或者不是指定类型时抛出
      */
+    @SuppressWarnings("unused")
     @NotNull
     public static <T> T parse(EvaluationContext context, @Language("SpEL") String expression, Object rootObject, Class<T> requiredType) {
         Object any = parse(context, expression, rootObject);
